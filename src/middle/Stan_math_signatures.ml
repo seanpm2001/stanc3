@@ -69,6 +69,10 @@ let (manual_stan_math_signatures :
       (string, stan_math_table_values list) Hashtbl.t ) =
   String.Table.create ()
 
+let (manual_stan_laplace_signatures :
+  (string, stan_math_table_values list) Hashtbl.t ) =
+  String.Table.create ()
+
 (* XXX The correct word here isn't combination - what is it? *)
 let all_combinations xx =
   List.fold_right xx ~init:[[]] ~f:(fun x accum ->
@@ -163,6 +167,17 @@ let variadic_laplace_tol_arg_types =
   [ (UnsizedType.DataOnly, UnsizedType.UReal); (DataOnly, UInt); (DataOnly, UInt)
   ; (DataOnly, UInt); (DataOnly, UInt) ]
 
+let add_unqualified_laplace (name, rt, uqargts, mem_pattern) =
+  Hashtbl.add_multi manual_stan_laplace_signatures ~key:name
+    ~data:
+      ( rt
+      , List.map ~f:(fun x -> (UnsizedType.AutoDiffable, x)) uqargts
+      , mem_pattern )
+
+let () = 
+add_unqualified_laplace ("bernoulli_logit", ReturnType UReal, [UArray UInt; UArray UInt], AoS);
+add_unqualified_laplace ("poisson_log", ReturnType UReal, [UArray UInt; UArray UInt], AoS) 
+
 let variadic_laplace_mandatory_fun_args = []
 let variadic_laplace_fun_return_type = UnsizedType.UMatrix
 let variadic_laplace_return_type = UnsizedType.UReal
@@ -248,6 +263,10 @@ let is_variadic_laplace_tol_fn x =
   && ( String.is_suffix ~suffix:"_tol_lpmf" x
      || String.is_suffix ~suffix:"_tol_lpdf" x
      || String.is_suffix ~suffix:"_tol_rng" x )
+
+let laplace_distributions = 
+  [([Lpmf; Rng], "bernoulli_logit", [DVInt; DVInt], Common.Helpers.AoS);
+  ([Lpmf; Rng], "poisson_log", [DVInt; DVInt], AoS)]
 
 let distributions =
   [ ( full_lpmf
@@ -385,6 +404,10 @@ let is_stan_math_function_name name =
   let name = Utils.stdlib_distribution_name name in
   Hashtbl.mem stan_math_signatures name
 
+let is_stan_laplace_function_name name =
+  let name = Utils.stdlib_distribution_name name in
+  Hashtbl.mem manual_stan_laplace_signatures name
+  
 let is_soa_supported name args =
   let name = Utils.stdlib_distribution_name name in
   let value = Hashtbl.find stan_math_signatures name in
