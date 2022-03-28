@@ -274,6 +274,8 @@ let distributions =
     , [DVInt; DVInt; DVReal; DVReal]
     , Common.Helpers.SoA ); (full_lpdf, "beta", [DVReal; DVReal; DVReal], SoA)
   ; ([Lpdf; Ccdf; Cdf], "beta_proportion", [DVReal; DVReal; DIntAndReals], SoA)
+  ; ([Lpmf; Rng], "laplace_marginal_bernoulli_logit", [DVInt; DVInt], AoS)
+  ; ([Lpmf; Rng], "laplace_marginal_poisson_log", [DVInt; DVInt], AoS)  
   ; (full_lpmf, "bernoulli", [DVInt; DVReal], SoA)
   ; ([Lpmf; Rng], "bernoulli_logit", [DVInt; DVReal], SoA)
   ; ([Lpmf], "bernoulli_logit_glm", [DVInt; DMatrix; DReal; DVector], SoA)
@@ -945,6 +947,8 @@ let () =
   add_binary_vec_int_real "bessel_first_kind" SoA ;
   add_binary_vec_int_real "bessel_second_kind" SoA ;
   add_binary_vec "beta" SoA ;
+  add_unqualified ("laplace_marginal_bernoulli_logit_rng", ReturnType (UArray UReal ), [UArray UInt; UArray UInt], AoS) ;
+  add_unqualified ("laplace_marginal_poisson_log_rng", ReturnType (UArray UReal ), [UArray UInt; UArray UInt], AoS) ;
   (* XXX For some reason beta_proportion_rng doesn't take ints as first arg *)
   for_vector_types (fun t ->
       for_all_vector_types (fun u ->
@@ -2147,13 +2151,6 @@ let%expect_test "declarative distributions" =
   |> print_endline ;
   [%expect
     {|
-    laplace_marginal_lpdf
     binomial_coefficient_log
-    laplace_marginal_lpmf
-    laplace_poisson_log_rng
-    laplace_rng
     multiply_log
-    laplace_bernoulli_logit_rng
-    laplace_marginal_bernoulli_logit_lpmf
-    laplace_marginal_poisson_log_lpmf
     lkj_cov_log |}]

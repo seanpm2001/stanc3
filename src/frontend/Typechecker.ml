@@ -574,7 +574,7 @@ let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list
           let known_families =
             List.map
               ~f:(fun (_, y, _, _) -> y)
-              Stan_math_signatures.laplace_distributions in
+              Stan_math_signatures.distributions in
           let is_known_family s =
             List.mem known_families s ~equal:String.equal in
           match suffix with
@@ -834,7 +834,6 @@ and check_variadic_laplace ~is_cond_dist (loc : Location_span.t)
     (* 1. check that the pdf/pmf this is calling is valid *)
     let internal_name =
       id.name
-      |> String.chop_prefix_exn ~prefix:"laplace_marginal_"
       |> String.substr_replace_all ~pattern:"_tol" ~with_:"" in
     ignore  (*ignore the result - we only want this to raise an error *)
   (* except for the possibility of promotions?*)

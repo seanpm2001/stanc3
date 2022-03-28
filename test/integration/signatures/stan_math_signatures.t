@@ -10685,68 +10685,28 @@ Display all Stan math signatures exposed in the language
   lambert_wm1(array[,,,,,,] vector) => array[,,,,,,] vector
   lambert_wm1(array[,,,,,,] row_vector) => array[,,,,,,] row_vector
   lambert_wm1(array[,,,,,,] matrix) => array[,,,,,,] matrix
-  laplace_bernoulli_logit_rng(array[] int, array[] int,
-                                (vector, data matrix, data array[] real, data array[] int) => matrix,
-                                vector, matrix, array[] real, array[] int,
-                                vector) => vector
-  laplace_bernoulli_logit_rng(array[] int, array[] int,
-                                (vector, data array[] vector, data array[] real, data array[] int) => matrix,
-                                vector, array[] vector, array[] real,
-                                array[] int, vector) => vector
-  laplace_marginal_bernoulli_logit_lpmf(array[] int, array[] int,
-                                          (vector, data matrix, data array[] real, data array[] int) => matrix,
-                                          vector, matrix, array[] real,
-                                          array[] int, vector) => real
-  laplace_marginal_bernoulli_logit_lpmf(array[] int, array[] int,
-                                          (vector, data matrix, data array[] real, data array[] int) => matrix,
-                                          vector, matrix, array[] real,
-                                          array[] int, vector, real, int) => real
-  laplace_marginal_bernoulli_logit_lpmf(array[] int, array[] int,
-                                          (vector, data array[] vector, data array[] real, data array[] int) => matrix,
-                                          vector, array[] vector, array[] real,
-                                          array[] int, vector) => real
-  laplace_marginal_bernoulli_logit_lpmf(array[] int, array[] int,
-                                          (vector, data array[] vector, data array[] real, data array[] int) => matrix,
-                                          vector, array[] vector, array[] real,
-                                          array[] int, vector, real, int) => real
-  laplace_marginal_lpdf(vector,
-                          (vector, vector, data vector, data array[] int) => real,
-                          vector, array[] int,
-                          (vector, data matrix, data array[] real, data array[] int) => matrix,
-                          vector, matrix, array[] real, array[] int, vector) => real
-  laplace_marginal_lpdf(vector,
-                          (vector, vector, data vector, data array[] int) => real,
-                          vector, array[] int,
-                          (vector, data matrix, data array[] real, data array[] int) => matrix,
-                          vector, matrix, array[] real, array[] int, vector,
-                          real, int, int, int) => real
-  laplace_marginal_lpmf(array[] int,
-                          (vector, vector, data vector, data array[] int) => real,
-                          vector, vector,
-                          (vector, data matrix, data array[] real, data array[] int) => matrix,
-                          vector, matrix, array[] real, array[] int, vector,
-                          real, int, int, int) => real
-  laplace_marginal_poisson_log_lpmf(array[] int, array[] int, vector,
-                                      (vector, data array[] vector, data array[] real, data array[] int) => matrix,
-                                      vector, array[] vector, array[] real,
-                                      array[] int, vector) => real
-  laplace_marginal_poisson_log_lpmf(array[] int, array[] int,
-                                      (vector, data array[] vector, data array[] real, data array[] int) => matrix,
-                                      vector, array[] vector, array[] real,
-                                      array[] int, vector) => real
-  laplace_poisson_log_rng(array[] int, array[] int, vector,
-                            (vector, data array[] vector, data array[] real, data array[] int) => matrix,
-                            vector, array[] vector, array[] real, array[] int,
-                            vector) => vector
-  laplace_poisson_log_rng(array[] int, array[] int,
-                            (vector, data array[] vector, data array[] real, data array[] int) => matrix,
-                            vector, array[] vector, array[] real, array[] int,
-                            vector) => vector
-  laplace_rng((vector, vector, data vector, data array[] int) => real, vector,
-                vector, array[] int,
-                (vector, data matrix, data array[] real, data array[] int) => matrix,
-                vector, matrix, array[] real, array[] int, vector, real, int,
-                int, int) => vector
+  laplace_marginal_bernoulli_logit_log(int, int) => real
+  laplace_marginal_bernoulli_logit_log(int, array[] int) => real
+  laplace_marginal_bernoulli_logit_log(array[] int, int) => real
+  laplace_marginal_bernoulli_logit_log(array[] int, array[] int) => real
+  laplace_marginal_bernoulli_logit_lpmf(int, int) => real
+  laplace_marginal_bernoulli_logit_lpmf(int, array[] int) => real
+  laplace_marginal_bernoulli_logit_lpmf(array[] int, int) => real
+  laplace_marginal_bernoulli_logit_lpmf(array[] int, array[] int) => real
+  laplace_marginal_bernoulli_logit_rng(int) => int
+  laplace_marginal_bernoulli_logit_rng(array[] int) => array[] int
+  laplace_marginal_bernoulli_logit_rng(array[] int, array[] int) => array[] real
+  laplace_marginal_poisson_log_log(int, int) => real
+  laplace_marginal_poisson_log_log(int, array[] int) => real
+  laplace_marginal_poisson_log_log(array[] int, int) => real
+  laplace_marginal_poisson_log_log(array[] int, array[] int) => real
+  laplace_marginal_poisson_log_lpmf(int, int) => real
+  laplace_marginal_poisson_log_lpmf(int, array[] int) => real
+  laplace_marginal_poisson_log_lpmf(array[] int, int) => real
+  laplace_marginal_poisson_log_lpmf(array[] int, array[] int) => real
+  laplace_marginal_poisson_log_rng(int) => int
+  laplace_marginal_poisson_log_rng(array[] int) => array[] int
+  laplace_marginal_poisson_log_rng(array[] int, array[] int) => array[] real
   lbeta(int, int) => real
   lbeta(int, real) => real
   lbeta(real, int) => real

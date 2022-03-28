@@ -364,7 +364,7 @@ and gen_functionals fname suffix es mem_pattern =
             let normalized_dist_functor =
               Utils.stdlib_distribution_name (chop_functor_suffix f)
               ^ reduce_sum_functor_suffix in
-            ( strf "%s<%s%s>" fname normalized_dist_functor propto_template
+            ( Fmt.str "%s<%s%s>" fname normalized_dist_functor propto_template
             , grainsize :: container :: msgs :: tl )
         | x, f :: y0 :: t0 :: ts :: rel_tol :: abs_tol :: max_steps :: tl
           when Stan_math_signatures.is_variadic_ode_fn x
@@ -416,7 +416,7 @@ and gen_functionals fname suffix es mem_pattern =
             :: tl ) ->
             let next_map_rect_id = Hashtbl.length map_rect_calls + 1 in
             Hashtbl.add_exn map_rect_calls ~key:next_map_rect_id ~data:f ;
-            (strf "%s<%d, %s>" fname next_map_rect_id f, tl @ [msgs])
+            (Fmt.str "%s<%d, %s>" fname next_map_rect_id f, tl @ [msgs])
         | x, args when Stan_math_signatures.is_variadic_laplace_fn x ->
             let dist_vector_args, fn_variadic_args =
               let blah1, blah2 =
