@@ -560,12 +560,13 @@ let check_make_tuple loc _ _ id tes =
     ~expr:(FunApp (StanLib FnPlain, id, tes))
     ~ad_level:(expr_ad_lub tes) ~type_:UnsizedType.UMatrix ~loc
 
-let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list) =
+let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list)
+    =
   match Env.find tenv (Utils.normalized_name id.name) with
   | {kind= `Variable _; _} :: _
   (* variables can sometimes shadow stanlib functions, so we have to check this *)
     when not
-            (Stan_math_signatures.is_stan_laplace_function_name
+           (Stan_math_signatures.is_stan_laplace_function_name
               (Utils.normalized_name id.name) ) ->
       Semantic_error.returning_fn_expected_nonfn_found loc id.name |> error
   | [] ->
@@ -588,7 +589,7 @@ let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list
               if
                 is_known_family prefix
                 && List.mem ~equal:String.equal
-                      Utils.cumulative_distribution_suffices_w_rng suffix
+                     Utils.cumulative_distribution_suffices_w_rng suffix
               then
                 Semantic_error
                 .returning_fn_expected_undeclared_dist_suffix_found loc
@@ -616,9 +617,9 @@ let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list
         mk_typed_expression
           ~expr:
             (mk_fun_app ~is_cond_dist
-                ( fnk (Fun_kind.suffix_from_name id.name)
-                , id
-                , Promotion.promote_list es promotions ) )
+               ( fnk (Fun_kind.suffix_from_name id.name)
+               , id
+               , Promotion.promote_list es promotions ) )
           ~ad_level:(expr_ad_lub es) ~type_:ut ~loc
     | AmbiguousMatch sigs ->
         Semantic_error.ambiguous_function_promotion loc id.name
@@ -630,7 +631,7 @@ let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list
         |> List.map ~f:(fun e -> e.emeta.type_)
         |> Semantic_error.illtyped_fn_app loc id.name (l, b)
         |> error )
-  
+
 let rec check_fn ~is_cond_dist loc cf tenv id (tes : Ast.typed_expression list)
     =
   if Stan_math_signatures.is_reduce_sum_fn id.name then
@@ -794,7 +795,7 @@ and check_variadic_dae ~is_cond_dist loc cf tenv id tes =
           expected_args err
         |> error )
   | _ -> fail ()
-          
+
 (**
  * Validate variadic laplace approximation.
  * We check that
@@ -830,17 +831,16 @@ and check_variadic_laplace ~is_cond_dist (loc : Location_span.t)
     | Some v -> v
     | None -> Semantic_error.variadic_laplace_missing_args loc |> error in
   let dist_args = List.drop_last_exn dist_vector_args in
-    (* begin typechecking *)
-    (* 1. check that the pdf/pmf this is calling is valid *)
-    let internal_name =
-      id.name
-      |> String.substr_replace_all ~pattern:"_tol" ~with_:"" in
-    ignore  (*ignore the result - we only want this to raise an error *)
-  (* except for the possibility of promotions?*)
+  (* begin typechecking *)
+  (* 1. check that the pdf/pmf this is calling is valid *)
+  let internal_name =
+    id.name |> String.substr_replace_all ~pattern:"_tol" ~with_:"" in
+  ignore (*ignore the result - we only want this to raise an error *)
+    (* except for the possibility of promotions?*)
     ( check_laplace_dist ~is_cond_dist:false loc tenv
-         {id with name= internal_name}
-         dist_args
-       : typed_expression ) ;
+        {id with name= internal_name}
+        dist_args
+      : typed_expression ) ;
   (* 2. check that the init vector is valid *)
   if init_vector.emeta.type_ <> UVector then
     Semantic_error.vector_expected init_vector.emeta.loc

@@ -70,7 +70,7 @@ let (manual_stan_math_signatures :
   String.Table.create ()
 
 let (manual_stan_laplace_signatures :
-  (string, stan_math_table_values list) Hashtbl.t ) =
+      (string, stan_math_table_values list) Hashtbl.t ) =
   String.Table.create ()
 
 (* XXX The correct word here isn't combination - what is it? *)
@@ -174,9 +174,11 @@ let add_unqualified_laplace (name, rt, uqargts, mem_pattern) =
       , List.map ~f:(fun x -> (UnsizedType.AutoDiffable, x)) uqargts
       , mem_pattern )
 
-let () = 
-add_unqualified_laplace ("bernoulli_logit", ReturnType UReal, [UArray UInt; UArray UInt], AoS);
-add_unqualified_laplace ("poisson_log", ReturnType UReal, [UArray UInt; UArray UInt], AoS) 
+let () =
+  add_unqualified_laplace
+    ("bernoulli_logit", ReturnType UReal, [UArray UInt; UArray UInt], AoS) ;
+  add_unqualified_laplace
+    ("poisson_log", ReturnType UReal, [UArray UInt; UArray UInt], AoS)
 
 let variadic_laplace_mandatory_fun_args = []
 let variadic_laplace_fun_return_type = UnsizedType.UMatrix
@@ -264,9 +266,9 @@ let is_variadic_laplace_tol_fn x =
      || String.is_suffix ~suffix:"_tol_lpdf" x
      || String.is_suffix ~suffix:"_tol_rng" x )
 
-let laplace_distributions = 
-  [([Lpmf; Rng], "bernoulli_logit", [DVInt; DVInt], Common.Helpers.AoS);
-  ([Lpmf; Rng], "poisson_log", [DVInt; DVInt], AoS)]
+let laplace_distributions =
+  [ ([Lpmf; Rng], "bernoulli_logit", [DVInt; DVInt], Common.Helpers.AoS)
+  ; ([Lpmf; Rng], "poisson_log", [DVInt; DVInt], AoS) ]
 
 let distributions =
   [ ( full_lpmf
@@ -275,7 +277,7 @@ let distributions =
     , Common.Helpers.SoA ); (full_lpdf, "beta", [DVReal; DVReal; DVReal], SoA)
   ; ([Lpdf; Ccdf; Cdf], "beta_proportion", [DVReal; DVReal; DIntAndReals], SoA)
   ; ([Lpmf; Rng], "laplace_marginal_bernoulli_logit", [DVInt; DVInt], AoS)
-  ; ([Lpmf; Rng], "laplace_marginal_poisson_log", [DVInt; DVInt], AoS)  
+  ; ([Lpmf; Rng], "laplace_marginal_poisson_log", [DVInt; DVInt], AoS)
   ; (full_lpmf, "bernoulli", [DVInt; DVReal], SoA)
   ; ([Lpmf; Rng], "bernoulli_logit", [DVInt; DVReal], SoA)
   ; ([Lpmf], "bernoulli_logit_glm", [DVInt; DMatrix; DReal; DVector], SoA)
@@ -409,7 +411,7 @@ let is_stan_math_function_name name =
 let is_stan_laplace_function_name name =
   let name = Utils.stdlib_distribution_name name in
   Hashtbl.mem manual_stan_laplace_signatures name
-  
+
 let is_soa_supported name args =
   let name = Utils.stdlib_distribution_name name in
   let value = Hashtbl.find stan_math_signatures name in
@@ -947,8 +949,16 @@ let () =
   add_binary_vec_int_real "bessel_first_kind" SoA ;
   add_binary_vec_int_real "bessel_second_kind" SoA ;
   add_binary_vec "beta" SoA ;
-  add_unqualified ("laplace_marginal_bernoulli_logit_rng", ReturnType (UArray UReal ), [UArray UInt; UArray UInt], AoS) ;
-  add_unqualified ("laplace_marginal_poisson_log_rng", ReturnType (UArray UReal ), [UArray UInt; UArray UInt], AoS) ;
+  add_unqualified
+    ( "laplace_marginal_bernoulli_logit_rng"
+    , ReturnType (UArray UReal)
+    , [UArray UInt; UArray UInt]
+    , AoS ) ;
+  add_unqualified
+    ( "laplace_marginal_poisson_log_rng"
+    , ReturnType (UArray UReal)
+    , [UArray UInt; UArray UInt]
+    , AoS ) ;
   (* XXX For some reason beta_proportion_rng doesn't take ints as first arg *)
   for_vector_types (fun t ->
       for_all_vector_types (fun u ->
@@ -2149,8 +2159,7 @@ let%expect_test "declarative distributions" =
          | _ -> false )
   |> Fmt.str "@[<v>%a@]" Fmt.(list ~sep:cut string)
   |> print_endline ;
-  [%expect
-    {|
+  [%expect {|
     binomial_coefficient_log
     multiply_log
     lkj_cov_log |}]
