@@ -10696,6 +10696,16 @@ Display all Stan math signatures exposed in the language
   laplace_marginal_bernoulli_logit_rng(int) => int
   laplace_marginal_bernoulli_logit_rng(array[] int) => array[] int
   laplace_marginal_bernoulli_logit_rng(array[] int, array[] int) => array[] real
+  laplace_marginal_neg_binomial_2_log_log(int, int) => real
+  laplace_marginal_neg_binomial_2_log_log(int, array[] int) => real
+  laplace_marginal_neg_binomial_2_log_log(array[] int, int) => real
+  laplace_marginal_neg_binomial_2_log_log(array[] int, array[] int) => real
+  laplace_marginal_neg_binomial_2_log_lpmf(int, int) => real
+  laplace_marginal_neg_binomial_2_log_lpmf(int, array[] int) => real
+  laplace_marginal_neg_binomial_2_log_lpmf(array[] int, int) => real
+  laplace_marginal_neg_binomial_2_log_lpmf(array[] int, array[] int) => real
+  laplace_marginal_neg_binomial_2_log_rng(int) => int
+  laplace_marginal_neg_binomial_2_log_rng(array[] int) => array[] int
   laplace_marginal_poisson_log_log(int, int) => real
   laplace_marginal_poisson_log_log(int, array[] int) => real
   laplace_marginal_poisson_log_log(array[] int, int) => real

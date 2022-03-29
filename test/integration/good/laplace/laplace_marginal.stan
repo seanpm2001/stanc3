@@ -58,7 +58,7 @@ model {
 }
 
 generated quantities {
-  vector theta_pred = laplace_rng(L_f, eta, delta_L, delta_int_L,
+  vector[1] theta_pred = laplace_rng(L_f, eta, delta_L, delta_int_L,
                                   K_f, phi, x, delta_K, delta_int_K,
                                   theta0, tol, max_num_steps,
                                   hessian_block_size, compute_W_root);

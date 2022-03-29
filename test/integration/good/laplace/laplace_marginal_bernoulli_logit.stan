@@ -1,11 +1,11 @@
 functions {
-  matrix K(vector phi, array[] vector x, array[] real delta,
+  matrix K(array[] vector x, vector phi, array[] real delta,
            array[] int delta_int) {
     matrix[1, 1] covariance;
     return covariance;
   }
   
-  matrix Km(vector phi, matrix x, array[] real delta, array[] int delta_int) {
+  matrix Km(matrix x, vector phi, array[] real delta, array[] int delta_int) {
     matrix[1, 1] covariance;
     return covariance;
   }
@@ -29,17 +29,18 @@ parameters {
 
 model {
   target +=
-    laplace_marginal_bernoulli_logit_lpmf(y | n_samples, theta0, K, phi, x, delta,
+    laplace_marginal_bernoulli_logit_lpmf(y | n_samples, theta0, K, x, phi, delta,
                                           delta_int);
   target +=
-    laplace_marginal_bernoulli_logit_lpmf(y | n_samples, theta0, Km, phi, x_m, delta,
+    laplace_marginal_bernoulli_logit_lpmf(y | n_samples, theta0, Km, x_m, phi, delta,
                                           delta_int);
 }
 
 generated quantities {
   vector[1] theta_pred
-    = laplace_bernoulli_logit_rng(y, n_samples, theta0, K, phi, x, delta, delta_int);
-  theta_pred = laplace_bernoulli_logit_rng(y, n_samples, theta0, Km, phi, x_m, delta,
+    = laplace_marginal_bernoulli_logit_rng(y, n_samples, theta0, K, 
+      forward_as_tuple(x), forward_as_tuple(x), phi, delta, delta_int);
+  theta_pred = laplace_marginal_bernoulli_logit_rng(y, n_samples, theta0, Km, forward_as_tuple(x_m), forward_as_tuple(x_m), phi, delta,
                                             delta_int);
 }
 

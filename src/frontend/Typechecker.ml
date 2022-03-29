@@ -807,25 +807,25 @@ and check_variadic_laplace ~is_cond_dist (loc : Location_span.t)
     (cf : context_flags_record) (tenv : Env.t) (id : identifier)
     (tes : typed_expression list) =
   (* argument splitting *)
+  let not_basic =
+    id.name <> "laplace_marginal_tol_lpdf"
+    && id.name <> "laplace_marginal_tol_lpmf"
+    && id.name <> "laplace_marginal_lpdf"
+    && id.name <> "laplace_marginal_lpmf"
+    && id.name <> "laplace_marginal_tol_rng"
+    && id.name <> "laplace_marginal_rng" in
   let dist_vector_args, fn_variadic_args =
-    let blah1, blah2 =
+    let dist_args, variadic_args =
       List.split_while
         ~f:(fun {emeta= {type_; _}; _} -> not (UnsizedType.is_fun_type type_))
         tes in
-    let not_basic =
-      id.name <> "laplace_marginal_tol_lpdf"
-      && id.name <> "laplace_marginal_tol_lpmf"
-      && id.name <> "laplace_marginal_lpdf"
-      && id.name <> "laplace_marginal_lpmf"
-      && id.name <> "laplace_marginal_tol_rng"
-      && id.name <> "laplace_marginal_rng" in
-    if not_basic then (blah1, blah2)
+    if not_basic then (dist_args, variadic_args)
     else
       let blah3, blah4 =
         List.split_while
           ~f:(fun {emeta= {type_; _}; _} -> not (UnsizedType.is_fun_type type_))
-          (List.tl_exn blah2) in
-      (blah1 @ [List.hd_exn blah2] @ blah3, blah4) in
+          (List.tl_exn variadic_args) in
+      (dist_args @ [List.hd_exn variadic_args] @ blah3, blah4) in
   let init_vector =
     match List.last dist_vector_args with
     | Some v -> v
@@ -835,12 +835,13 @@ and check_variadic_laplace ~is_cond_dist (loc : Location_span.t)
   (* 1. check that the pdf/pmf this is calling is valid *)
   let internal_name =
     id.name |> String.substr_replace_all ~pattern:"_tol" ~with_:"" in
-  ignore (*ignore the result - we only want this to raise an error *)
-    (* except for the possibility of promotions?*)
-    ( check_laplace_dist ~is_cond_dist:false loc tenv
-        {id with name= internal_name}
-        dist_args
-      : typed_expression ) ;
+  if not_basic then
+    ignore (*ignore the result - we only want this to raise an error *)
+      (* except for the possibility of promotions?*)
+      ( check_laplace_dist ~is_cond_dist:false loc tenv
+          {id with name= internal_name}
+          dist_args
+        : typed_expression ) ;
   (* 2. check that the init vector is valid *)
   if init_vector.emeta.type_ <> UVector then
     Semantic_error.vector_expected init_vector.emeta.loc
