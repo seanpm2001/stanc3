@@ -560,8 +560,8 @@ let check_make_tuple loc _ _ id tes =
     ~expr:(FunApp (StanLib FnPlain, id, tes))
     ~ad_level:(expr_ad_lub tes) ~type_:UnsizedType.UMatrix ~loc
 
-let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list)
-    =
+let check_laplace_dist ~is_cond_dist loc tenv id
+    (dist_args : Ast.typed_expression list) =
   match Env.find tenv (Utils.normalized_name id.name) with
   | {kind= `Variable _; _} :: _
   (* variables can sometimes shadow stanlib functions, so we have to check this *)
@@ -608,7 +608,7 @@ let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list
         variadic functions
     *)
     match
-      SignatureMismatch.matching_function tenv id.name (get_arg_types es)
+      SignatureMismatch.matching_function tenv id.name (get_arg_types dist_args)
     with
     | UniqueMatch (Void, _, _) ->
         Semantic_error.returning_fn_expected_nonreturning_found loc id.name
@@ -619,15 +619,15 @@ let check_laplace_dist ~is_cond_dist loc tenv id (es : Ast.typed_expression list
             (mk_fun_app ~is_cond_dist
                ( fnk (Fun_kind.suffix_from_name id.name)
                , id
-               , Promotion.promote_list es promotions ) )
-          ~ad_level:(expr_ad_lub es) ~type_:ut ~loc
+               , Promotion.promote_list dist_args promotions ) )
+          ~ad_level:(expr_ad_lub dist_args) ~type_:ut ~loc
     | AmbiguousMatch sigs ->
         Semantic_error.ambiguous_function_promotion loc id.name
-          (Some (List.map ~f:type_of_expr_typed es))
+          (Some (List.map ~f:type_of_expr_typed dist_args))
           sigs
         |> error
     | SignatureErrors (l, b) ->
-        es
+        dist_args
         |> List.map ~f:(fun e -> e.emeta.type_)
         |> Semantic_error.illtyped_fn_app loc id.name (l, b)
         |> error )
@@ -807,7 +807,7 @@ and check_variadic_laplace ~is_cond_dist (loc : Location_span.t)
     (cf : context_flags_record) (tenv : Env.t) (id : identifier)
     (tes : typed_expression list) =
   (* argument splitting *)
-  let not_basic =
+  let not_general_laplace =
     id.name <> "laplace_marginal_tol_lpdf"
     && id.name <> "laplace_marginal_tol_lpmf"
     && id.name <> "laplace_marginal_lpdf"
@@ -819,7 +819,7 @@ and check_variadic_laplace ~is_cond_dist (loc : Location_span.t)
       List.split_while
         ~f:(fun {emeta= {type_; _}; _} -> not (UnsizedType.is_fun_type type_))
         tes in
-    if not_basic then (dist_args, variadic_args)
+    if not_general_laplace then (dist_args, variadic_args)
     else
       let blah3, blah4 =
         List.split_while
@@ -833,9 +833,8 @@ and check_variadic_laplace ~is_cond_dist (loc : Location_span.t)
   let dist_args = List.drop_last_exn dist_vector_args in
   (* begin typechecking *)
   (* 1. check that the pdf/pmf this is calling is valid *)
-  let internal_name =
-    id.name |> String.substr_replace_all ~pattern:"_tol" ~with_:"" in
-  if not_basic then
+  let internal_name = id.name in
+  if not_general_laplace then
     ignore (*ignore the result - we only want this to raise an error *)
       (* except for the possibility of promotions?*)
       ( check_laplace_dist ~is_cond_dist:false loc tenv

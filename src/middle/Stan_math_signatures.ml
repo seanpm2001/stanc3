@@ -167,6 +167,8 @@ let variadic_laplace_tol_arg_types =
   [ (UnsizedType.DataOnly, UnsizedType.UReal); (DataOnly, UInt); (DataOnly, UInt)
   ; (DataOnly, UInt); (DataOnly, UInt) ]
 
+let variadic_laplace_tol_arg_types2 = [DReal; DInt; DInt; DInt; DInt]
+
 let add_unqualified_laplace (name, rt, uqargts, mem_pattern) =
   Hashtbl.add_multi manual_stan_laplace_signatures ~key:name
     ~data:
@@ -270,7 +272,19 @@ let is_variadic_laplace_tol_fn x =
 let laplace_distributions =
   [ ([Lpmf; Rng], "bernoulli_logit", [DVInt; DVInt], Common.Helpers.AoS)
   ; ([Lpmf; Rng], "poisson_log", [DVInt; DVInt], AoS)
-  ; ([Lpmf; Rng], "neg_binomial_2_log", [DVInt; DVInt], AoS) ]
+  ; ([Lpmf; Rng], "neg_binomial_2_log", [DVInt; DVInt], AoS)
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_bernoulli_logit_tol"
+    , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS )
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_poisson_log_tol"
+    , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS )
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_neg_binomial_2_log_tol"
+    , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS ) ]
 
 let distributions =
   [ ( full_lpmf
@@ -281,7 +295,18 @@ let distributions =
   ; ([Lpmf; Rng], "laplace_marginal_bernoulli_logit", [DVInt; DVInt], AoS)
   ; ([Lpmf; Rng], "laplace_marginal_poisson_log", [DVInt; DVInt], AoS)
   ; ([Lpmf; Rng], "laplace_marginal_neg_binomial_2_log", [DVInt; DVInt], AoS)
-  ; (full_lpmf, "bernoulli", [DVInt; DVReal], SoA)
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_bernoulli_logit_tol"
+    , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS )
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_poisson_log_tol"
+    , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS )
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_neg_binomial_2_log_tol"
+    , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS ); (full_lpmf, "bernoulli", [DVInt; DVReal], SoA)
   ; ([Lpmf; Rng], "bernoulli_logit", [DVInt; DVReal], SoA)
   ; ([Lpmf], "bernoulli_logit_glm", [DVInt; DMatrix; DReal; DVector], SoA)
   ; (full_lpmf, "binomial", [DVInt; DVInt; DVReal], SoA)

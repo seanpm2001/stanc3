@@ -1,40 +1,4 @@
-  $ ../../../../../install/default/bin/stanc --auto-format laplace_marginal.stan
-Warning in 'laplace_marginal.stan', line 2, column 36: Declaration of arrays
-    by placing brackets after a type is deprecated and will be removed in
-    Stan 2.32.0. Instead use the array keyword before the type. This can be
-    changed automatically using the auto-format flag to stanc
-Warning in 'laplace_marginal.stan', line 2, column 50: Declaration of arrays
-    by placing brackets after a type is deprecated and will be removed in
-    Stan 2.32.0. Instead use the array keyword before the type. This can be
-    changed automatically using the auto-format flag to stanc
-Warning in 'laplace_marginal.stan', line 7, column 52: Declaration of arrays
-    by placing brackets after a type is deprecated and will be removed in
-    Stan 2.32.0. Instead use the array keyword before the type. This can be
-    changed automatically using the auto-format flag to stanc
-Warning in 'laplace_marginal.stan', line 15, column 2: Declaration of arrays
-    by placing brackets after a variable name is deprecated and will be
-    removed in Stan 2.32.0. Instead use the array keyword before the type.
-    This can be changed automatically using the auto-format flag to stanc
-Warning in 'laplace_marginal.stan', line 20, column 2: Declaration of arrays
-    by placing brackets after a variable name is deprecated and will be
-    removed in Stan 2.32.0. Instead use the array keyword before the type.
-    This can be changed automatically using the auto-format flag to stanc
-Warning in 'laplace_marginal.stan', line 21, column 2: Declaration of arrays
-    by placing brackets after a variable name is deprecated and will be
-    removed in Stan 2.32.0. Instead use the array keyword before the type.
-    This can be changed automatically using the auto-format flag to stanc
-Semantic error in 'laplace_marginal.stan', line 38, column 54 to column 65:
-   -------------------------------------------------
-    36:  model {
-    37:    // lpdf signatures
-    38:    target += laplace_marginal_lpdf(delta_L | L_f, eta, delta_int_L, 
-                                                               ^
-    39:                                    K_f, phi, x, delta_K, delta_int_K,
-    40:                                    theta0, tol, max_num_steps,
-   -------------------------------------------------
-
-Laplace initialization must be of type vector. Instead found type array[] int.
-  $ ../../../../../install/default/bin/stanc --auto-format laplace_marginal_bernoulli_logit.stan
+  $ ../../../../../install/default/bin/stanc --auto-format bernoulli_logit.stan
 functions {
   matrix K(array[] vector x, vector phi, array[] real delta,
            array[] int delta_int) {
@@ -84,7 +48,129 @@ generated quantities {
                                                     delta_int);
 }
 
-  $ ../../../../../install/default/bin/stanc --auto-format laplace_marginal_poisson_log.stan
+  $ ../../../../../install/default/bin/stanc --auto-format general-laplace.stan
+functions {
+  matrix K_f(vector phi, matrix x, vector delta, array[] int delta_int) {
+    int n_patients = delta_int[1];
+    vector[2 * n_patients] K_vec;
+    return diag_matrix(K_vec);
+  }
+  
+  real L_f(vector theta, vector eta, vector delta, array[] int delta_int) {
+    return 1.0;
+  }
+}
+data {
+  int N;
+  vector[N] y_obs;
+  vector[N] time;
+  int n_patients;
+  array[n_patients] int<lower=1, upper=N> start;
+  array[n_patients] int<lower=1, upper=N> end;
+  real<lower=0> y0; // initial dose.
+}
+transformed data {
+  matrix[0, 0] x_mat_dummy;
+  vector[2 * n_patients] theta0 = rep_vector(0, 2 * n_patients);
+  real tol = 1e-3; // CHECK -- what should this be.
+  int max_num_steps = 1000;
+  int hessian_block_size = 2;
+  int solver = 2; // CHECK
+  array[2 * n_patients + 4] int delta_int;
+  vector[2 * N + 1] delta;
+  
+  delta_int[1] = n_patients;
+  delta_int[2] = N;
+  delta_int[3 : (n_patients + 2)] = start;
+  delta_int[(n_patients + 3) : (2 * n_patients + 2)] = end;
+  
+  delta[1 : N] = y_obs;
+  delta[(N + 1) : (2 * N)] = time;
+  delta[2 * N + 1] = y0;
+  int max_steps_line_search = 100;
+}
+parameters {
+  real<lower=0> sigma;
+  real<lower=0> sigma_0;
+  real<lower=0> sigma_1;
+  real k_0_pop;
+  real k_1_pop;
+  vector[2] phi;
+  vector[3] eta;
+  // vector[n_patients] k_0;
+  // vector[n_patients] k_1;
+}
+transformed parameters {
+  
+}
+model {
+  // likelihood
+  target += laplace_marginal_tol_lpdf(delta | L_f, eta, delta_int, tol, max_num_steps, hessian_block_size, solver, max_steps_line_search, theta0, K_f, phi, x_mat_dummy, to_vector(delta), delta_int);
+}
+generated quantities {
+  /*
+  vector[2 * n_patients] theta_pred = laplace_marginal_tol_rng(L_f, eta, delta, delta_int,
+                                                   K_f, phi, x_mat_dummy,
+                                                  to_array_1d(delta), delta_int,
+                                                   theta0,
+                                                   tol, max_num_steps,
+                                                   hessian_block_size,
+                                                   solver);
+  */
+  // vector[n_patients] k_0;
+  // vector[n_patients] k_1;
+  //
+  // for (i in 1:n_patients) {
+  //   k_0[i] = k_0_pop + theta_pred[1 + 2 * (i - 1)];
+  //   k_1[i] = k_1_pop + theta_pred[2 * i];
+  // }
+}
+
+Warning in 'general-laplace.stan', line 3, column 51: Declaration of arrays
+    by placing brackets after a type is deprecated and will be removed in
+    Stan 2.32.0. Instead use the array keyword before the type. This can be
+    changed automatically using the auto-format flag to stanc
+Warning in 'general-laplace.stan', line 9, column 53: Declaration of arrays
+    by placing brackets after a type is deprecated and will be removed in
+    Stan 2.32.0. Instead use the array keyword before the type. This can be
+    changed automatically using the auto-format flag to stanc
+  $ ../../../../../install/default/bin/stanc --auto-format laplace_marginal.stan
+Warning in 'laplace_marginal.stan', line 2, column 36: Declaration of arrays
+    by placing brackets after a type is deprecated and will be removed in
+    Stan 2.32.0. Instead use the array keyword before the type. This can be
+    changed automatically using the auto-format flag to stanc
+Warning in 'laplace_marginal.stan', line 2, column 50: Declaration of arrays
+    by placing brackets after a type is deprecated and will be removed in
+    Stan 2.32.0. Instead use the array keyword before the type. This can be
+    changed automatically using the auto-format flag to stanc
+Warning in 'laplace_marginal.stan', line 7, column 52: Declaration of arrays
+    by placing brackets after a type is deprecated and will be removed in
+    Stan 2.32.0. Instead use the array keyword before the type. This can be
+    changed automatically using the auto-format flag to stanc
+Warning in 'laplace_marginal.stan', line 15, column 2: Declaration of arrays
+    by placing brackets after a variable name is deprecated and will be
+    removed in Stan 2.32.0. Instead use the array keyword before the type.
+    This can be changed automatically using the auto-format flag to stanc
+Warning in 'laplace_marginal.stan', line 20, column 2: Declaration of arrays
+    by placing brackets after a variable name is deprecated and will be
+    removed in Stan 2.32.0. Instead use the array keyword before the type.
+    This can be changed automatically using the auto-format flag to stanc
+Warning in 'laplace_marginal.stan', line 21, column 2: Declaration of arrays
+    by placing brackets after a variable name is deprecated and will be
+    removed in Stan 2.32.0. Instead use the array keyword before the type.
+    This can be changed automatically using the auto-format flag to stanc
+Semantic error in 'laplace_marginal.stan', line 38, column 54 to column 65:
+   -------------------------------------------------
+    36:  model {
+    37:    // lpdf signatures
+    38:    target += laplace_marginal_lpdf(delta_L | L_f, eta, delta_int_L, 
+                                                               ^
+    39:                                    K_f, phi, x, delta_K, delta_int_K,
+    40:                                    theta0, tol, max_num_steps,
+   -------------------------------------------------
+
+Laplace initialization must be of type vector. Instead found type array[] int.
+  $ ../../../../../install/default/bin/stanc --auto-format poisson_log.stan
 functions {
   matrix covar_fun(vector x, real alpha) {
     matrix[1, 1] covariance;
@@ -199,3 +285,34 @@ where F1 = (vector, real) => matrix
 Available signatures:
 (data array[] int, data array[] int, data vector, <F1>, vector, real) => matrix
   Expected 3 arguments but found 1 arguments.
+  $ ../../../../../install/default/bin/stanc --auto-format poisson_log_tol.stan
+functions {
+  matrix covar_fun(vector x, real alpha) {
+    matrix[1, 1] covariance;
+    return covariance;
+  }
+}
+transformed data {
+  array[1] int y;
+  array[1] int n_samples;
+  vector[1] theta0;
+  vector[1] x;
+  real tol = 1e-3; // CHECK -- what should this be.
+  int max_num_steps = 1000;
+  int hessian_block_size = 2;
+  int solver = 2; // CHECK
+  int max_steps_line_search = 3;
+}
+parameters {
+  real alpha;
+}
+model {
+  target += laplace_marginal_poisson_log_tol_lpmf(y | n_samples, tol, max_num_steps, hessian_block_size, solver, max_steps_line_search, theta0, covar_fun, x, alpha);
+  y ~ laplace_marginal_poisson_log(n_samples, theta0, covar_fun, x, alpha);
+}
+/*
+generated quantities {
+   vector[1] y_pred = laplace_marginal_poisson_log_rng(y, n_samples, theta0, 
+     covar_fun, forward_as_tuple(x), forward_as_tuple(x), alpha);
+}
+*/
