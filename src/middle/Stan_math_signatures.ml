@@ -272,6 +272,7 @@ let is_variadic_laplace_tol_fn x =
 let laplace_distributions =
   [ ([Lpmf; Rng], "bernoulli_logit", [DVInt; DVInt], Common.Helpers.AoS)
   ; ([Lpmf; Rng], "poisson_log", [DVInt; DVInt], AoS)
+  ; ([Lpmf; Rng], "poisson_log_2", [DVInt; DVInt; DVector], AoS)
   ; ([Lpmf; Rng], "neg_binomial_2_log", [DVInt; DVInt], AoS)
   ; ( [Lpmf; Rng]
     , "laplace_marginal_bernoulli_logit_tol"
@@ -280,6 +281,10 @@ let laplace_distributions =
   ; ( [Lpmf; Rng]
     , "laplace_marginal_poisson_log_tol"
     , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS )
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_poisson_log_2_tol"
+    , List.append [DVInt; DVInt; DVector] variadic_laplace_tol_arg_types2
     , AoS )
   ; ( [Lpmf; Rng]
     , "laplace_marginal_neg_binomial_2_log_tol"
@@ -294,6 +299,7 @@ let distributions =
   ; ([Lpdf; Ccdf; Cdf], "beta_proportion", [DVReal; DVReal; DIntAndReals], SoA)
   ; ([Lpmf; Rng], "laplace_marginal_bernoulli_logit", [DVInt; DVInt], AoS)
   ; ([Lpmf; Rng], "laplace_marginal_poisson_log", [DVInt; DVInt], AoS)
+  ; ([Lpmf; Rng], "laplace_marginal_poisson_log_2", [DVInt; DVInt; DVector], AoS)
   ; ([Lpmf; Rng], "laplace_marginal_neg_binomial_2_log", [DVInt; DVInt], AoS)
   ; ( [Lpmf; Rng]
     , "laplace_marginal_bernoulli_logit_tol"
@@ -302,6 +308,10 @@ let distributions =
   ; ( [Lpmf; Rng]
     , "laplace_marginal_poisson_log_tol"
     , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
+    , AoS )
+  ; ( [Lpmf; Rng]
+    , "laplace_marginal_poisson_log_2_tol"
+    , List.append [DVInt; DVInt; DVector] variadic_laplace_tol_arg_types2
     , AoS )
   ; ( [Lpmf; Rng]
     , "laplace_marginal_neg_binomial_2_log_tol"

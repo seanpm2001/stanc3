@@ -10742,6 +10742,35 @@ Display all Stan math signatures exposed in the language
   laplace_marginal_neg_binomial_2_log_tol_rng(int, real, int, int, int, int) => int
   laplace_marginal_neg_binomial_2_log_tol_rng(array[] int, real, int, int, int,
                                                 int) => array[] int
+  laplace_marginal_poisson_log_2_log(int, int, vector) => real
+  laplace_marginal_poisson_log_2_log(int, array[] int, vector) => real
+  laplace_marginal_poisson_log_2_log(array[] int, int, vector) => real
+  laplace_marginal_poisson_log_2_log(array[] int, array[] int, vector) => real
+  laplace_marginal_poisson_log_2_lpmf(int, int, vector) => real
+  laplace_marginal_poisson_log_2_lpmf(int, array[] int, vector) => real
+  laplace_marginal_poisson_log_2_lpmf(array[] int, int, vector) => real
+  laplace_marginal_poisson_log_2_lpmf(array[] int, array[] int, vector) => real
+  laplace_marginal_poisson_log_2_rng(int, vector) => array[] int
+  laplace_marginal_poisson_log_2_rng(array[] int, vector) => array[] int
+  laplace_marginal_poisson_log_2_tol_log(int, int, vector, real, int, int, int,
+                                           int) => real
+  laplace_marginal_poisson_log_2_tol_log(int, array[] int, vector, real, int,
+                                           int, int, int) => real
+  laplace_marginal_poisson_log_2_tol_log(array[] int, int, vector, real, int,
+                                           int, int, int) => real
+  laplace_marginal_poisson_log_2_tol_log(array[] int, array[] int, vector,
+                                           real, int, int, int, int) => real
+  laplace_marginal_poisson_log_2_tol_lpmf(int, int, vector, real, int, int,
+                                            int, int) => real
+  laplace_marginal_poisson_log_2_tol_lpmf(int, array[] int, vector, real, int,
+                                            int, int, int) => real
+  laplace_marginal_poisson_log_2_tol_lpmf(array[] int, int, vector, real, int,
+                                            int, int, int) => real
+  laplace_marginal_poisson_log_2_tol_lpmf(array[] int, array[] int, vector,
+                                            real, int, int, int, int) => real
+  laplace_marginal_poisson_log_2_tol_rng(int, vector, real, int, int, int, int) => array[] int
+  laplace_marginal_poisson_log_2_tol_rng(array[] int, vector, real, int, int,
+                                           int, int) => array[] int
   laplace_marginal_poisson_log_log(int, int) => real
   laplace_marginal_poisson_log_log(int, array[] int) => real
   laplace_marginal_poisson_log_log(array[] int, int) => real
