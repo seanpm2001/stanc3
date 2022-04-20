@@ -182,6 +182,8 @@ let () =
   add_unqualified_laplace
     ("poisson_log", ReturnType UReal, [UArray UInt; UArray UInt], AoS) ;
   add_unqualified_laplace
+    ("poisson_2_log", ReturnType UReal, [UArray UInt; UArray UInt; UVector], AoS) ;
+  add_unqualified_laplace
     ("neg_binomial_2_log", ReturnType UReal, [UArray UInt; UArray UInt], AoS)
 
 let variadic_laplace_mandatory_fun_args = []
@@ -270,20 +272,16 @@ let is_variadic_laplace_tol_fn x =
      || String.is_suffix ~suffix:"_tol_rng" x )
 
 let laplace_distributions =
-  [ ([Lpmf; Rng], "bernoulli_logit", [DVInt; DVInt], Common.Helpers.AoS)
-  ; ([Lpmf; Rng], "poisson_log", [DVInt; DVInt], AoS)
-  ; ([Lpmf; Rng], "poisson_log_2", [DVInt; DVInt; DVector], AoS)
-  ; ([Lpmf; Rng], "neg_binomial_2_log", [DVInt; DVInt], AoS)
-  ; ( [Lpmf; Rng]
+  [ ( [Lpmf; Rng]
     , "laplace_marginal_bernoulli_logit_tol"
     , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
-    , AoS )
+    , Common.Helpers.AoS )
   ; ( [Lpmf; Rng]
     , "laplace_marginal_poisson_log_tol"
     , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
     , AoS )
   ; ( [Lpmf; Rng]
-    , "laplace_marginal_poisson_log_2_tol"
+    , "laplace_marginal_poisson_2_log_tol"
     , List.append [DVInt; DVInt; DVector] variadic_laplace_tol_arg_types2
     , AoS )
   ; ( [Lpmf; Rng]
@@ -299,7 +297,7 @@ let distributions =
   ; ([Lpdf; Ccdf; Cdf], "beta_proportion", [DVReal; DVReal; DIntAndReals], SoA)
   ; ([Lpmf; Rng], "laplace_marginal_bernoulli_logit", [DVInt; DVInt], AoS)
   ; ([Lpmf; Rng], "laplace_marginal_poisson_log", [DVInt; DVInt], AoS)
-  ; ([Lpmf; Rng], "laplace_marginal_poisson_log_2", [DVInt; DVInt; DVector], AoS)
+  ; ([Lpmf; Rng], "laplace_marginal_poisson_2_log", [DVInt; DVInt; DVector], AoS)
   ; ([Lpmf; Rng], "laplace_marginal_neg_binomial_2_log", [DVInt; DVInt], AoS)
   ; ( [Lpmf; Rng]
     , "laplace_marginal_bernoulli_logit_tol"
@@ -310,7 +308,7 @@ let distributions =
     , List.append [DVInt; DVInt] variadic_laplace_tol_arg_types2
     , AoS )
   ; ( [Lpmf; Rng]
-    , "laplace_marginal_poisson_log_2_tol"
+    , "laplace_marginal_poisson_2_log_tol"
     , List.append [DVInt; DVInt; DVector] variadic_laplace_tol_arg_types2
     , AoS )
   ; ( [Lpmf; Rng]
@@ -996,6 +994,11 @@ let () =
     ( "laplace_marginal_poisson_log_rng"
     , ReturnType (UArray UReal)
     , [UArray UInt; UArray UInt]
+    , AoS ) ;
+  add_unqualified
+    ( "laplace_marginal_poisson_2_log_rng"
+    , ReturnType (UArray UReal)
+    , [UArray UInt; UArray UInt; UVector]
     , AoS ) ;
   (* XXX For some reason beta_proportion_rng doesn't take ints as first arg *)
   for_vector_types (fun t ->

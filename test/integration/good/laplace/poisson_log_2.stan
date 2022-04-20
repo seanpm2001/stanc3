@@ -25,15 +25,16 @@ parameters {
 model {
   
   target +=
-    laplace_marginal_poisson_log_2_tol_lpmf(y | n_samples, ye, tol, max_num_steps,
+    laplace_marginal_poisson_2_log_tol_lpmf(y | n_samples, ye, tol, max_num_steps,
                                   hessian_block_size,
                                   solver, max_steps_line_search, theta0, covar_fun, x, alpha);
-  y ~ laplace_marginal_poisson_log_2(n_samples, ye, theta0, covar_fun, x, alpha);
+  y ~ laplace_marginal_poisson_2_log(n_samples, ye, theta0, covar_fun, x, alpha);
   
 }
-/*
+
 generated quantities {
-   vector[1] y_pred = laplace_marginal_poisson_log_rng(y, n_samples, theta0, 
-     covar_fun, forward_as_tuple(x), forward_as_tuple(x), alpha);
+   vector[1] y_pred = laplace_marginal_poisson_2_log_rng(y, 
+    n_samples, ye, theta0, covar_fun, forward_as_tuple(x),
+     forward_as_tuple(x), alpha);
+     
 }
-*/
