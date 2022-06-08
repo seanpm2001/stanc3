@@ -31,11 +31,12 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
       - run: bash -x scripts/install_build_deps.sh
 
-      - name: Build
+      - name: Build ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
           opam exec -- dune subst
           opam exec -- dune build @install --profile static
+      - name: Build macos
         if: matrix.os == 'macos-latest'
         run: |
           opam exec -- dune subst
