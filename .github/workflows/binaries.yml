@@ -32,9 +32,14 @@ jobs:
       - run: bash -x scripts/install_build_deps.sh
 
       - name: Build
+        if: matrix.os == 'ubuntu-latest'
         run: |
           opam exec -- dune subst
           opam exec -- dune build @install --profile static
+        if: matrix.os == 'macos-latest'
+        run: |
+          opam exec -- dune subst
+          opam exec -- dune build @install
 
       - run: mv _build/default/src/stanc/stanc.exe ${{ matrix.os }}-stanc
 
