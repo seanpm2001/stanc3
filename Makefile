@@ -14,6 +14,12 @@ testcoverage:
 	bisect-ppx-report summary --expect src/ --do-not-expect src/stancjs/
 	@rm *.coverage
 
+testprofile:
+	@mkdir -p ./prof/
+	@$(RM) ./prof/*
+	dune clean
+	OCAML_LANDMARKS="on,output=temporary:`pwd`/prof/,format=json" dune runtest --instrument-with landmarks --force
+
 format:
 	dune build @fmt
 
