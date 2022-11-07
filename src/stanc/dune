@@ -4,7 +4,7 @@
  (instrumentation
   (backend bisect_ppx))
  (instrumentation
-  (backend landmarks))
+  (backend landmarks --auto))
  (modules Stanc)
  (public_name stanc)
  (preprocess
